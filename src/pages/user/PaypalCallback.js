@@ -14,9 +14,9 @@ const PaypalCallback = () => {
     useEffect(() => {
         const capturePayment = async () => {
             try {
-                const res = await axios.get(`${API_URL}/api/paypal/capture?orderId=${orderId}`);
+                const res = await axios.get(`${API_URL}/paypal/capture?orderId=${orderId}`);
                 if (res.data.success) {
-                    await axios.delete(`${API_URL}/api/carts/clear/${res.data.data.userId}`);
+                    await axios.delete(`${API_URL}/carts/clear/${res.data.data.userId}`);
                     message.success('Thanh toán PayPal thành công!');
                     navigate('/payment-success');
                 } else {
