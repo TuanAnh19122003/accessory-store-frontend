@@ -70,7 +70,6 @@ const Product = () => {
     }, [filters]);
 
     const handleClickProduct = (product) => {
-        if (product.status !== 1) return; // chỉ cho phép click nếu active
         navigate(`/products/${product.slug}`, { state: { id: product.id } });
     };
 
@@ -121,102 +120,53 @@ const Product = () => {
                     ) : (
                         <>
                             <Row gutter={[16, 16]}>
-                                {products.map(p => {
-                                    const isActive = p.status === 1;
-                                    return (
-                                        <Col xs={12} sm={8} md={6} key={p.id}>
-                                            <Card
-                                                hoverable={isActive}
-                                                style={{
-                                                    opacity: isActive ? 1 : 0.6,
-                                                    cursor: isActive ? 'pointer' : 'not-allowed',
-                                                    position: 'relative'
-                                                }}
-                                                cover={
-                                                    p.image ? (
-                                                        <img
-                                                            src={`http://localhost:5000/${p.image}`}
-                                                            alt={p.name}
-                                                            style={{
-                                                                height: 150,
-                                                                objectFit: 'cover',
-                                                                cursor: isActive ? 'pointer' : 'not-allowed'
-                                                            }}
-                                                            onClick={() => handleClickProduct(p)}
-                                                        />
-                                                    ) : (
-                                                        <div style={{
-                                                            height: 150,
-                                                            background: '#f0f0f0',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            color: '#999',
-                                                            cursor: isActive ? 'pointer' : 'not-allowed'
-                                                        }} onClick={() => handleClickProduct(p)}>
-                                                            Chưa có ảnh
+                                {products.map(p => (
+                                    <Col xs={12} sm={8} md={6} key={p.id}>
+                                        <Card
+                                            hoverable
+                                            cover={
+                                                p.image ? (
+                                                    <img
+                                                        src={`http://localhost:5000/${p.image}`}
+                                                        alt={p.name}
+                                                        style={{ height: 150, objectFit: 'cover', cursor: 'pointer' }}
+                                                        onClick={() => handleClickProduct(p)}
+                                                    />
+                                                ) : (
+                                                    <div style={{
+                                                        height: 150,
+                                                        background: '#f0f0f0',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        color: '#999',
+                                                        cursor: 'pointer'
+                                                    }} onClick={() => handleClickProduct(p)}>
+                                                        Chưa có ảnh
+                                                    </div>
+                                                )
+                                            }
+                                        >
+                                            <Card.Meta
+                                                title={<div style={{ cursor: 'pointer' }} onClick={() => handleClickProduct(p)}>{p.name}</div>}
+                                                description={
+                                                    p.discount ? (
+                                                        <div>
+                                                            <div style={{ textDecoration: 'line-through', color: '#888' }}>
+                                                                {formatCurrency(Number(p.originalPrice))}
+                                                            </div>
+                                                            <div style={{ color: 'red', fontWeight: 'bold' }}>
+                                                                {formatCurrency(Number(p.finalPrice))}
+                                                            </div>
                                                         </div>
+                                                    ) : (
+                                                        p.price ? formatCurrency(Number(p.price)) : "Liên hệ"
                                                     )
                                                 }
-                                            >
-                                                {!isActive && (
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        top: 8,
-                                                        right: 8,
-                                                        background: 'red',
-                                                        color: '#fff',
-                                                        padding: '2px 8px',
-                                                        fontSize: 12,
-                                                        borderRadius: 4,
-                                                        zIndex: 10
-                                                    }}>
-                                                        Ngừng bán
-                                                    </div>
-                                                )}
-
-                                                <Card.Meta
-                                                    title={
-                                                        <div
-                                                            style={{
-                                                                cursor: isActive ? 'pointer' : 'not-allowed',
-                                                                color: isActive ? 'inherit' : '#999'
-                                                            }}
-                                                            onClick={() => handleClickProduct(p)}
-                                                        >
-                                                            {p.name}
-                                                        </div>
-                                                    }
-                                                    description={
-                                                        !isActive ? (
-                                                            <div>
-                                                                {p.price && (
-                                                                    <div style={{ textDecoration: 'line-through', color: '#999' }}>
-                                                                        {formatCurrency(Number(p.price))}
-                                                                    </div>
-                                                                )}
-                                                                <div style={{ color: 'red', fontWeight: 'bold' }}>
-                                                                    Ngừng bán
-                                                                </div>
-                                                            </div>
-                                                        ) : p.discount ? (
-                                                            <div>
-                                                                <div style={{ textDecoration: 'line-through', color: '#888' }}>
-                                                                    {formatCurrency(Number(p.originalPrice))}
-                                                                </div>
-                                                                <div style={{ color: 'red', fontWeight: 'bold' }}>
-                                                                    {formatCurrency(Number(p.finalPrice))}
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            p.price ? formatCurrency(Number(p.price)) : "Liên hệ"
-                                                        )
-                                                    }
-                                                />
-                                            </Card>
-                                        </Col>
-                                    )
-                                })}
+                                            />
+                                        </Card>
+                                    </Col>
+                                ))}
                             </Row>
 
                             {/* Pagination */}
