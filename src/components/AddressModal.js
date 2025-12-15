@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Select, Input, Button } from 'antd';
+import { Modal, Select, Input, Button, message } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -15,22 +15,25 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     const [selectedWard, setSelectedWard] = useState(null);
     const [street, setStreet] = useState('');
 
-    // Fetch data helper
     const fetchData = async (url, setter) => {
         try {
             const res = await axios.get(url);
-            setter(res.data);
-        } catch (err) {
-            console.error(err);
+            if (res.data?.success) {
+                setter(res.data.data);
+            } else {
+                setter([]);
+            }
+        } catch (error) {
+            console.error(error);
+            message.error('Không thể tải dữ liệu địa chỉ');
+            setter([]);
         }
     };
 
-    // Load provinces khi modal mở
     useEffect(() => {
         if (visible) fetchData(`${API_URL}/provinces`, setProvinces);
     }, [visible]);
 
-    // Load districts khi province thay đổi
     useEffect(() => {
         if (selectedProvince) {
             fetchData(`${API_URL}/districts/${selectedProvince.code}`, setDistricts);
@@ -41,7 +44,6 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
         setSelectedWard(null);
     }, [selectedProvince]);
 
-    // Load wards khi district thay đổi
     useEffect(() => {
         if (selectedDistrict) {
             fetchData(`${API_URL}/wards/${selectedDistrict.code}`, setWards);
@@ -52,18 +54,27 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     }, [selectedDistrict]);
 
     const handleConfirm = () => {
-        const fullAddress = [street, selectedWard?.name, selectedDistrict?.name, selectedProvince?.name]
-            .filter(Boolean)
-            .join(', ');
+        if (!street || !selectedProvince || !selectedDistrict || !selectedWard) {
+            return message.warning('Vui lòng nhập đầy đủ địa chỉ');
+        }
+
+        const fullAddress = [
+            street,
+            selectedWard.name,
+            selectedDistrict.name,
+            selectedProvince.name
+        ].join(', ');
+
         onConfirm(fullAddress);
         onClose();
     };
 
-    const renderSelect = (placeholder, options, selected, onChange) => (
+    const renderSelect = (placeholder, options, selected, onChange, disabled = false) => (
         <Select
             placeholder={placeholder}
-            value={selected?.code || undefined}
+            value={selected?.code}
             onChange={code => onChange(options.find(item => item.code === code))}
+            disabled={disabled}
             allowClear
         >
             {options.map(item => (
@@ -77,11 +88,11 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     return (
         <Modal
             title="Chọn địa chỉ giao hàng"
-            visible={visible}
+            open={visible}
             onCancel={onClose}
             footer={[
                 <Button key="cancel" onClick={onClose}>Hủy</Button>,
-                <Button key="confirm" type="primary" onClick={handleConfirm}>Xác nhận</Button>,
+                <Button key="confirm" type="primary" onClick={handleConfirm}>Xác nhận</Button>
             ]}
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -90,9 +101,10 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
                     value={street}
                     onChange={e => setStreet(e.target.value)}
                 />
+
                 {renderSelect('Chọn tỉnh/thành phố', provinces, selectedProvince, setSelectedProvince)}
-                {renderSelect('Chọn quận/huyện', districts, selectedDistrict, setSelectedDistrict)}
-                {renderSelect('Chọn phường/xã', wards, selectedWard, setSelectedWard)}
+                {renderSelect('Chọn quận/huyện', districts, selectedDistrict, setSelectedDistrict, !selectedProvince)}
+                {renderSelect('Chọn phường/xã', wards, selectedWard, setSelectedWard, !selectedDistrict)}
             </div>
         </Modal>
     );
