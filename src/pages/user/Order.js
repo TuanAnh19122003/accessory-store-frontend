@@ -13,7 +13,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../../utils/helpers';
 import { CartContext } from './CartContext';
-import AddressModal from '../../components/AddressModal';
 
 const { Title } = Typography;
 const API_URL = process.env.REACT_APP_API_URL;
@@ -29,7 +28,6 @@ const Order = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const userId = user?.id;
     const { fetchCartCount } = useContext(CartContext);
-    const [modalVisible, setModalVisible] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,7 +37,7 @@ const Order = () => {
             setPhone(user.phone || '');
         }
         fetchCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchCart = async () => {
@@ -157,22 +155,15 @@ const Order = () => {
                                     placeholder="Nhập số điện thoại"
                                 />
                             </Form.Item>
-                            <Form layout="vertical">
-                                <Form.Item label="Địa chỉ giao hàng">
-                                    <Input
-                                        placeholder="Chọn địa chỉ"
-                                        value={address}
-                                        readOnly
-                                        onClick={() => setModalVisible(true)}
-                                    />
-                                </Form.Item>
-
-                                <AddressModal
-                                    visible={modalVisible}
-                                    onClose={() => setModalVisible(false)}
-                                    onConfirm={setAddress}
+                            <Form.Item label="Địa chỉ giao hàng">
+                                <Input.TextArea
+                                    rows={3}
+                                    value={address}
+                                    onChange={e => setAddress(e.target.value)}
+                                    placeholder="Ví dụ: 123 Lê Lợi, Phường Bến Thành, Quận 1, TP.HCM"
                                 />
-                            </Form>
+                            </Form.Item>
+
 
                             <Form.Item label="Phương thức thanh toán">
                                 <Radio.Group
