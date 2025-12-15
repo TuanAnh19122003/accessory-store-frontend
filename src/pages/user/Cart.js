@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
-
-
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -20,7 +18,7 @@ const CartPage = () => {
     const navigate = useNavigate();
 
     const fetchCart = async () => {
-        if (!userId) return message.warning('Bạn cần đăng nhập để xem giỏ hàng');
+        if (!userId) return;
         setLoading(true);
         try {
             const res = await axios.get(`${process.env.REACT_APP_API_URL}/carts/${userId}`);
@@ -34,7 +32,7 @@ const CartPage = () => {
 
     useEffect(() => {
         fetchCart();
-    }, []);
+    }, [userId]);
 
     const handleQuantityChange = async (value, cartItemId) => {
         try {
@@ -60,6 +58,18 @@ const CartPage = () => {
             message.error('Lỗi khi xóa sản phẩm');
         }
     };
+
+    // Nếu chưa đăng nhập
+    if (!userId) {
+        return (
+            <div style={{ padding: 24, textAlign: 'center' }}>
+                <Title level={2}>Bạn chưa đăng nhập</Title>
+                <Button type="primary" size="large" onClick={() => navigate('/login')}>
+                    Đăng nhập ngay
+                </Button>
+            </div>
+        );
+    }
 
     const columns = [
         {
