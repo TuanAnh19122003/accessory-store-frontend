@@ -255,7 +255,7 @@ const UserPage = () => {
                         <Descriptions.Item label="Tên">{viewingUser.firstname}</Descriptions.Item>
                         <Descriptions.Item label="Email">{viewingUser.email}</Descriptions.Item>
                         <Descriptions.Item label="Ảnh đại diện">
-                            {viewingUser.image ? <img src={`http://localhost:5000/${viewingUser.image}`} alt="avatar" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} /> : <span style={{ color: '#aaa' }}>Không có</span>}
+                            {viewingUser.image ? <img src={`${process.env.REACT_APP_API_URL}/${viewingUser.image}`} alt="avatar" style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 10 }} /> : <span style={{ color: '#aaa' }}>Không có</span>}
                         </Descriptions.Item>
                         <Descriptions.Item label="Trạng thái">{viewingUser.is_active ? <Tag color="green">Hoạt động</Tag> : <Tag color="red">Không hoạt động</Tag>}</Descriptions.Item>
                         <Descriptions.Item label="Vai trò">{roles.find(r => r.id === viewingUser.roleId)?.name || 'Không xác định'}</Descriptions.Item>

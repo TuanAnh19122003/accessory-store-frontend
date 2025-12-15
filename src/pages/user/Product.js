@@ -70,6 +70,7 @@ const Product = () => {
     }, [filters]);
 
     const handleClickProduct = (product) => {
+        if (product.status !== 'active') return;
         navigate(`/products/${product.slug}`, { state: { id: product.id } });
     };
 
@@ -123,13 +124,22 @@ const Product = () => {
                                 {products.map(p => (
                                     <Col xs={12} sm={8} md={6} key={p.id}>
                                         <Card
-                                            hoverable
+                                            hoverable={p.status === 'active'}
+                                            style={{
+                                                opacity: p.status === 'active' ? 1 : 0.6,
+                                                cursor: p.status === 'active' ? 'pointer' : 'not-allowed',
+                                                position: 'relative'
+                                            }}
                                             cover={
                                                 p.image ? (
                                                     <img
                                                         src={`http://localhost:5000/${p.image}`}
                                                         alt={p.name}
-                                                        style={{ height: 150, objectFit: 'cover', cursor: 'pointer' }}
+                                                        style={{
+                                                            height: 150,
+                                                            objectFit: 'cover',
+                                                            cursor: p.status === 'active' ? 'pointer' : 'not-allowed'
+                                                        }}
                                                         onClick={() => handleClickProduct(p)}
                                                     />
                                                 ) : (
@@ -140,17 +150,54 @@ const Product = () => {
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         color: '#999',
-                                                        cursor: 'pointer'
+                                                        cursor: p.status === 'active' ? 'pointer' : 'not-allowed'
                                                     }} onClick={() => handleClickProduct(p)}>
                                                         Chưa có ảnh
                                                     </div>
                                                 )
                                             }
                                         >
+                                            {p.status !== 'active' && (
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: 8,
+                                                    right: 8,
+                                                    background: 'red',
+                                                    color: '#fff',
+                                                    padding: '2px 8px',
+                                                    fontSize: 12,
+                                                    borderRadius: 4,
+                                                    zIndex: 10
+                                                }}>
+                                                    Ngừng bán
+                                                </div>
+                                            )}
+
                                             <Card.Meta
-                                                title={<div style={{ cursor: 'pointer' }} onClick={() => handleClickProduct(p)}>{p.name}</div>}
+                                                title={
+                                                    <div
+                                                        style={{
+                                                            cursor: p.status === 'active' ? 'pointer' : 'not-allowed',
+                                                            color: p.status === 'active' ? 'inherit' : '#999'
+                                                        }}
+                                                        onClick={() => handleClickProduct(p)}
+                                                    >
+                                                        {p.name}
+                                                    </div>
+                                                }
                                                 description={
-                                                    p.discount ? (
+                                                    p.status !== 'active' ? (
+                                                        <div>
+                                                            {p.price && (
+                                                                <div style={{ textDecoration: 'line-through', color: '#999' }}>
+                                                                    {formatCurrency(Number(p.price))}
+                                                                </div>
+                                                            )}
+                                                            <div style={{ color: 'red', fontWeight: 'bold' }}>
+                                                                Ngừng bán
+                                                            </div>
+                                                        </div>
+                                                    ) : p.discount ? (
                                                         <div>
                                                             <div style={{ textDecoration: 'line-through', color: '#888' }}>
                                                                 {formatCurrency(Number(p.originalPrice))}
