@@ -18,11 +18,7 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     const fetchData = async (url, setter) => {
         try {
             const res = await axios.get(url);
-            if (res.data?.success && Array.isArray(res.data.data)) {
-                setter(res.data.data);
-            } else {
-                setter([]);
-            }
+            setter(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
             console.error(error);
             message.error('Không thể tải dữ liệu địa chỉ');
