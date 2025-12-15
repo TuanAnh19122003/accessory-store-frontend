@@ -8,7 +8,7 @@ import { CartContext } from './CartContext';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
-const API_URL = 'http://localhost:5000';
+
 
 
 const CartPage = () => {
@@ -23,7 +23,7 @@ const CartPage = () => {
         if (!userId) return message.warning('Bạn cần đăng nhập để xem giỏ hàng');
         setLoading(true);
         try {
-            const res = await axios.get(`${API_URL}/api/carts/${userId}`);
+            const res = await axios.get(`${process.env.REACT_APP_API_URL}/carts/${userId}`);
             setCartItems(res.data.data);
             fetchCartCount();
         } catch (err) {
@@ -38,7 +38,7 @@ const CartPage = () => {
 
     const handleQuantityChange = async (value, cartItemId) => {
         try {
-            await axios.put(`${API_URL}/api/carts/update`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/carts/update`, {
                 cartItemId,
                 quantity: value
             });
@@ -51,7 +51,7 @@ const CartPage = () => {
 
     const handleRemove = async (cartItemId) => {
         try {
-            await axios.delete(`${API_URL}/api/carts/remove`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/carts/remove`, {
                 data: { cartItemId }
             });
             message.success('Đã xóa sản phẩm');
@@ -68,7 +68,7 @@ const CartPage = () => {
             render: (product) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <Image
-                        src={`${API_URL}/${product.image}`}
+                        src={`${process.env.REACT_APP_URL_IMAGES}/${product.image}`}
                         alt={product.name}
                         width={60}
                         height={60}

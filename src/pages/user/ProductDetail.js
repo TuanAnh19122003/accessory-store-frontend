@@ -9,7 +9,7 @@ import toast, { Toaster } from 'react-hot-toast'; // import toast
 import 'antd/dist/reset.css';
 
 const { Title, Paragraph } = Typography;
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ProductDetail = () => {
     const { slug } = useParams();

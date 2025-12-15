@@ -6,7 +6,7 @@ import axios from "axios";
 
 const { Title } = Typography;
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = process.env.REACT_APP_API_URL;
 
 // 👉 render giá sản phẩm
 const renderPrice = (p) => {
@@ -51,7 +51,7 @@ const renderCover = (p) => (
         )}
         {p.image ? (
             <img
-                src={`http://localhost:5000/${p.image}`}
+                src={`${process.env.REACT_APP_URL_IMAGES}/${p.image}`}
                 alt={p.name}
                 style={{ height: 160, objectFit: "cover", borderRadius: "12px 12px 0 0", width: "100%" }}
             />

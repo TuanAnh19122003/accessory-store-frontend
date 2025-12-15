@@ -6,7 +6,7 @@ import { formatCurrency } from '../../utils/helpers';
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
-    const API_URL = 'http://localhost:5000';
+    const API_URL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -21,7 +21,7 @@ const OrderHistory = () => {
                 const user = JSON.parse(storedUser);
                 const userId = user.id;
 
-                const res = await axios.get(`${API_URL}/api/orders/user/${userId}/details`);
+                const res = await axios.get(`${API_URL}/orders/user/${userId}/details`);
                 setOrders(res.data.data);
             } catch (error) {
                 console.error(error);
@@ -32,7 +32,7 @@ const OrderHistory = () => {
         };
 
         fetchOrders();
-    }, []);
+    }, [API_URL]);
 
 
     const columns = [

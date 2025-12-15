@@ -117,7 +117,7 @@ const Profile = () => {
                         <Col span={8} style={{ textAlign: 'center' }}>
                             {(previewImage || userData.image) ? (
                                 <img
-                                    src={previewImage || `http://localhost:5000/${userData.image}`}
+                                    src={previewImage || `${process.env.REACT_APP_URL_IMAGES}/${userData.image}`}
                                     alt="avatar"
                                     style={{
                                         width: '100%',
