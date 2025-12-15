@@ -18,19 +18,19 @@ const Dashboard = () => {
     const [categories, setCategories] = useState([]);
     const [orders, setOrders] = useState([]);
 
-    const API_URL = 'http://localhost:5000';
+    
 
     useEffect(() => {
         const fetchData = () => {
-            axios.get(`${API_URL}/api/products`)
+            axios.get(`${process.env.REACT_APP_API_URL}/products`)
                 .then(res => setProducts(res.data.data))
                 .catch(() => message.error('Không tải được danh sách sản phẩm'));
 
-            axios.get(`${API_URL}/api/categories`)
+            axios.get(`${process.env.REACT_APP_API_URL}/categories`)
                 .then(res => setCategories(res.data.data))
                 .catch(() => message.error('Không tải được danh mục'));
 
-            axios.get(`${API_URL}/api/orders`)
+            axios.get(`${process.env.REACT_APP_API_URL}/orders`)
                 .then(res => setOrders(res.data.data || []))
                 .catch(() => message.error('Không tải được đơn hàng'));
         };

@@ -205,7 +205,7 @@ const UserPage = () => {
                                         }}>
                                             {user.image ? (
                                                 <img
-                                                    src={`http://localhost:5000/${user.image}`}
+                                                    src={`${process.env.REACT_APP_URL_IMAGES}/${user.image}`}
                                                     alt="avatar"
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                 />
