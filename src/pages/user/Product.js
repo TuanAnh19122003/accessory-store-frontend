@@ -26,7 +26,6 @@ const Product = () => {
     });
     const [totalProducts, setTotalProducts] = useState(0);
 
-    // Lấy sản phẩm
     const fetchProducts = async () => {
         setLoading(true);
         try {
@@ -50,7 +49,6 @@ const Product = () => {
         }
     };
 
-    // Lấy categories từ API
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -64,13 +62,12 @@ const Product = () => {
         fetchCategories();
     }, []);
 
-    // Reload sản phẩm khi filters thay đổi
     useEffect(() => {
         fetchProducts();
     }, [filters]);
 
     const handleClickProduct = (product) => {
-        if (product.status !== 1) return; // chỉ click được sản phẩm active
+        if (!product.status) return; // Không cho click nếu ngừng bán
         navigate(`/products/${product.slug}`, { state: { id: product.id } });
     };
 
@@ -82,7 +79,6 @@ const Product = () => {
         <div style={{ padding: 24 }}>
             <Toaster position="top-center" />
             <Row gutter={24}>
-                {/* Cột trái: Filters */}
                 <Col xs={24} md={6}>
                     <Title level={4}>Lọc sản phẩm</Title>
                     <Search
@@ -111,7 +107,6 @@ const Product = () => {
                     <div>Giá: {filters.price[0].toLocaleString()}đ - {filters.price[1].toLocaleString()}đ</div>
                 </Col>
 
-                {/* Cột phải: Products */}
                 <Col xs={24} md={18}>
                     <Title level={4}>Tất cả sản phẩm</Title>
                     {loading ? (
@@ -124,23 +119,31 @@ const Product = () => {
                                 {products.map(p => (
                                     <Col xs={12} sm={8} md={6} key={p.id}>
                                         <Card
-                                            hoverable={p.status === 1}
+                                            hoverable={p.status}
                                             style={{
-                                                opacity: p.status === 1 ? 1 : 0.6,
-                                                cursor: p.status === 1 ? 'pointer' : 'not-allowed',
-                                                position: 'relative'
+                                                opacity: p.status ? 1 : 0.6,
+                                                borderRadius: 8,
+                                                transition: '0.3s'
                                             }}
-                                            cover={
-                                                p.image ? (
+                                        >
+                                            <div
+                                                style={{
+                                                    position: 'relative',
+                                                    cursor: p.status ? 'pointer' : 'default'
+                                                }}
+                                                onClick={() => handleClickProduct(p)}
+                                            >
+                                                {p.image ? (
                                                     <img
                                                         src={`http://localhost:5000/${p.image}`}
                                                         alt={p.name}
                                                         style={{
                                                             height: 150,
                                                             objectFit: 'cover',
-                                                            cursor: p.status === 1 ? 'pointer' : 'not-allowed'
+                                                            width: '100%',
+                                                            borderRadius: 8,
+                                                            filter: p.status ? 'none' : 'grayscale(80%)'
                                                         }}
-                                                        onClick={() => handleClickProduct(p)}
                                                     />
                                                 ) : (
                                                     <div style={{
@@ -150,55 +153,49 @@ const Product = () => {
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         color: '#999',
-                                                        cursor: p.status === 1 ? 'pointer' : 'not-allowed'
-                                                    }} onClick={() => handleClickProduct(p)}>
+                                                        borderRadius: 8,
+                                                        fontWeight: 'bold'
+                                                    }}>
                                                         Chưa có ảnh
                                                     </div>
-                                                )
-                                            }
-                                        >
-                                            {p.status !== 1 && (
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    top: 8,
-                                                    right: 8,
-                                                    background: 'red',
-                                                    color: '#fff',
-                                                    padding: '2px 8px',
-                                                    fontSize: 12,
-                                                    borderRadius: 4,
-                                                    zIndex: 10
-                                                }}>
-                                                    Ngừng bán
-                                                </div>
-                                            )}
+                                                )}
+                                                {!p.status && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: 8,
+                                                        left: 8,
+                                                        background: 'red',
+                                                        color: '#fff',
+                                                        padding: '2px 6px',
+                                                        borderRadius: 4,
+                                                        fontSize: 12,
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        Ngừng bán
+                                                    </div>
+                                                )}
+                                            </div>
 
                                             <Card.Meta
                                                 title={
                                                     <div
                                                         style={{
-                                                            cursor: p.status === 1 ? 'pointer' : 'not-allowed',
-                                                            color: p.status === 1 ? 'inherit' : '#999'
+                                                            marginTop: 8,
+                                                            cursor: p.status ? 'pointer' : 'default',
+                                                            color: p.status ? '#111' : '#555',
+                                                            fontWeight: 600
                                                         }}
-                                                        onClick={() => handleClickProduct(p)}
                                                     >
                                                         {p.name}
                                                     </div>
                                                 }
                                                 description={
-                                                    p.status !== 1 ? (
-                                                        <div>
-                                                            {p.price && (
-                                                                <div style={{ textDecoration: 'line-through', color: '#999' }}>
-                                                                    {formatCurrency(Number(p.price))}
-                                                                </div>
-                                                            )}
-                                                            <div style={{ color: 'red', fontWeight: 'bold' }}>
-                                                                Ngừng bán
-                                                            </div>
+                                                    !p.status ? (
+                                                        <div style={{ color: '#555', fontWeight: 'bold', marginTop: 4 }}>
+                                                            Liên hệ người bán
                                                         </div>
                                                     ) : p.discount ? (
-                                                        <div>
+                                                        <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
                                                             <div style={{ textDecoration: 'line-through', color: '#888' }}>
                                                                 {formatCurrency(Number(p.originalPrice))}
                                                             </div>
@@ -207,7 +204,9 @@ const Product = () => {
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        p.price ? formatCurrency(Number(p.price)) : "Liên hệ"
+                                                        <div style={{ marginTop: 4, fontWeight: 'bold', color: '#111' }}>
+                                                            {formatCurrency(Number(p.price))}
+                                                        </div>
                                                     )
                                                 }
                                             />
@@ -216,7 +215,6 @@ const Product = () => {
                                 ))}
                             </Row>
 
-                            {/* Pagination */}
                             {totalProducts > filters.pageSize && (
                                 <div style={{ textAlign: 'center', marginTop: 24 }}>
                                     <Pagination
