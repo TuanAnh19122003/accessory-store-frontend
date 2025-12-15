@@ -18,25 +18,26 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     const fetchData = async (url, setter) => {
         try {
             const res = await axios.get(url);
-            if (res.data?.success) {
-                setter(res.data.data);
-            } else {
-                setter([]);
-            }
+            setter(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
-            console.error(error);
+            console.error('Lỗi khi gọi API:', error);
             message.error('Không thể tải dữ liệu địa chỉ');
             setter([]);
         }
     };
 
     useEffect(() => {
-        if (visible) fetchData(`${API_URL}/provinces`, setProvinces);
+        if (visible) {
+            fetchData(`${API_URL}/provinces`, setProvinces);
+        }
     }, [visible]);
 
     useEffect(() => {
         if (selectedProvince) {
-            fetchData(`${API_URL}/districts/${selectedProvince.code}`, setDistricts);
+            fetchData(
+                `${API_URL}/districts/${selectedProvince.code}`,
+                setDistricts
+            );
         } else {
             setDistricts([]);
         }
@@ -46,7 +47,10 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
 
     useEffect(() => {
         if (selectedDistrict) {
-            fetchData(`${API_URL}/wards/${selectedDistrict.code}`, setWards);
+            fetchData(
+                `${API_URL}/wards/${selectedDistrict.code}`,
+                setWards
+            );
         } else {
             setWards([]);
         }
@@ -58,23 +62,18 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
             return message.warning('Vui lòng nhập đầy đủ địa chỉ');
         }
 
-        const fullAddress = [
-            street,
-            selectedWard.name,
-            selectedDistrict.name,
-            selectedProvince.name
-        ].join(', ');
-
+        const fullAddress = `${street}, ${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
         onConfirm(fullAddress);
         onClose();
     };
 
-    const renderSelect = (placeholder, options, selected, onChange, disabled = false) => (
+    const renderSelect = (placeholder, options, selected, onChange) => (
         <Select
             placeholder={placeholder}
             value={selected?.code}
-            onChange={code => onChange(options.find(item => item.code === code))}
-            disabled={disabled}
+            onChange={code =>
+                onChange(options.find(item => item.code === code))
+            }
             allowClear
         >
             {options.map(item => (
@@ -92,7 +91,9 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
             onCancel={onClose}
             footer={[
                 <Button key="cancel" onClick={onClose}>Hủy</Button>,
-                <Button key="confirm" type="primary" onClick={handleConfirm}>Xác nhận</Button>
+                <Button key="ok" type="primary" onClick={handleConfirm}>
+                    Xác nhận
+                </Button>
             ]}
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -101,10 +102,9 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
                     value={street}
                     onChange={e => setStreet(e.target.value)}
                 />
-
                 {renderSelect('Chọn tỉnh/thành phố', provinces, selectedProvince, setSelectedProvince)}
-                {renderSelect('Chọn quận/huyện', districts, selectedDistrict, setSelectedDistrict, !selectedProvince)}
-                {renderSelect('Chọn phường/xã', wards, selectedWard, setSelectedWard, !selectedDistrict)}
+                {renderSelect('Chọn quận/huyện', districts, selectedDistrict, setSelectedDistrict)}
+                {renderSelect('Chọn phường/xã', wards, selectedWard, setSelectedWard)}
             </div>
         </Modal>
     );
