@@ -18,9 +18,13 @@ const AddressModal = ({ visible, onClose, onConfirm }) => {
     const fetchData = async (url, setter) => {
         try {
             const res = await axios.get(url);
-            setter(Array.isArray(res.data) ? res.data : []);
+            if (res.data?.success && Array.isArray(res.data.data)) {
+                setter(res.data.data);
+            } else {
+                setter([]);
+            }
         } catch (error) {
-            console.error('Lỗi khi gọi API:', error);
+            console.error(error);
             message.error('Không thể tải dữ liệu địa chỉ');
             setter([]);
         }
